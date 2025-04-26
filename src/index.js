@@ -1,7 +1,7 @@
 import express from 'express';
 import publicRoutes from './routes/public.js';
-import privateRoutes from './routes/private.js';
-import auth from 'middlewares/auth.js';
+// import privateRoutes from './routes/private.js';
+import auth from './middlewares/auth.js';
 import dotenv from 'dotenv';
 import cors from 'cors';
 
@@ -22,6 +22,6 @@ const port = process.env.PORT || 3000;
 app.use(express.json());
 
 app.use('/', publicRoutes);
-app.use('/', auth, privateRoutes);
+// app.use('/', auth, privateRoutes);
 
 app.listen(port, () => console.log(`Server rodando na porta ${port}`));
