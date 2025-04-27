@@ -12,7 +12,16 @@ const auth = ( req, res, next ) => {
   }
 
   try {
-    
+    const decoded = jwt.verify(token.replace('Bearer ', ''), JWT_SECRET);
+    const userId = decoded.id;
+
+    //Check if user is valid
+    if(!ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Id do usuário inválido. "});
+    }
+
+    req.userId = userId;
+    next();
   } catch (error) {
     return res.status(401).json({ message: "Token Inválido" });
   }
