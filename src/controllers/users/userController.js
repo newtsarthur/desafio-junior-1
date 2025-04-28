@@ -97,8 +97,58 @@ export const login = async ( req, res ) => {
   }
 };
 
+//Update user
+export const updateUser = async ( req, res ) => {
+  try {
+    const userId = req.params.id;
+    const token = req.headers.authorization?.split(' ')[1];
+
+    if(!token) {
+      return res.status(401).json({ message: "Token de autenticação não foi informado."});
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    if (decoded.id !== userId) {
+      return res.status(403).json({ message: "Você não tem permissão atualizar esse usuário!" });
+    }
+
+    const { name, phone, adress, email, password } = req.body;
+    if (email) {
+      const existingUser = await prisma.user.findUnique({
+        where: { email },
+      });
+    
+      if (existingUser && existingUser.id !== userId) {
+        return res.status(400).json({ message: "Este email já está em uso por outro usuário!" });
+      }
+    }
+    let hashedPassword;
+    if (password) {
+      const salt = await bcrypt.genSalt(10);
+      hashedPassword = await bcrypt.hash(password, salt);
+    }
+    const updatedUser = await prisma.user.update({
+      where: { id: userId },
+      data: {
+        name,
+        phone,
+        adress,
+        email,
+        ...(password && { password: hashedPassword }),
+      },
+    });
+    res.status(200).json({
+      message: "Usuário atualizado com sucesso",
+      updatedUser,
+    });
+  } catch (error) {
+    console.error( "Erro ao tentar fazer atualizar usuário", error );
+    res.status(500).json({ message: "Erro no servidor.", error: error.message });
+  }
+}
+
 //Delete user
-export const deleteUsers = async (req, res) => {
+export const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
     const token = req.headers.authorization?.split(' ')[1];
