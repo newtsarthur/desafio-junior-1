@@ -12,6 +12,7 @@ export const registerPet = async ( req, res ) => {
     {
       return res.status(400).json({ message: " Usuário inválido "});
     }
+
     //Catches on body
     const { name, birthDate, type, race } = req.body;
 
@@ -30,8 +31,40 @@ export const registerPet = async ( req, res ) => {
 
     // Return pet creted in db
     res.status(201).json(addpetDB);
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro ao criar o pet no db" });
   }
 };
+
+//Delete pet
+export const deletePet = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const petId = req.params.petId;
+
+    if (!userId || !petId) {
+      return res.status(400).json({ message: "Usuário inválido ou pet inválido" });
+    }
+
+    const pet = await prisma.pet.findFirst({
+      where: { id: petId, userId },
+    });
+
+    if (!pet) {
+      return res.status(404).json({ message: "Pet não encontrado ou não pertence ao usuário" });
+    }
+
+    await prisma.pet.delete({
+      where: { id: petId },
+    });
+
+    res.status(200).json({ message: "Pet deletado com sucesso" });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Erro ao deletar pet do db" });
+  }
+};
+
