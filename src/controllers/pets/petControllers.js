@@ -101,6 +101,34 @@ export const getPet = async (req, res) => {
   }
 }
 
+// Get Unique Pet
+export const getPetId = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const petId = req.params.petId;
+
+    if (!userId || !petId) {
+      return res.status(400).json({ message: "Usuário ou pet não encontrado, dados inválidos" });
+    }
+
+    const pet = await prisma.pet.findFirst({
+      where: {
+        id: petId,
+        userId,
+      },
+    });
+
+    if (!pet) {
+      return res.status(404).json({ message: "Pet não encontrado ou não pertence ao usuário" });
+    }
+
+    res.status(200).json(pet);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Erro ao procurar o pet" });
+  }
+};
+
 //Delete pet
 export const deletePet = async (req, res) => {
   try {

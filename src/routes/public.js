@@ -1,6 +1,6 @@
 import express from 'express';
 import { register, login } from '../controllers/users/userController.js';
-import { getPet, registerPet } from '../controllers/pets/petControllers.js';
+import { getPet, getPetId, registerPet } from '../controllers/pets/petControllers.js';
 
 import auth from '../middlewares/auth.js'; 
 
@@ -15,5 +15,7 @@ router.post('/petadd', auth, registerPet);
 
 //Pet get router
 router.get('/getpet', auth, getPet);
+//Pet unique router
+router.get('/getpetid/:petId', auth, getPetId);
 
 export default router;
