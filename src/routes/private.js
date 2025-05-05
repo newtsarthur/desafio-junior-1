@@ -1,6 +1,6 @@
 import express from 'express';
 import { deleteUser, updateUser } from '../controllers/users/userController.js';
-import { deletePet } from '../controllers/pets/petControllers.js';
+import { deletePet, updatePet } from '../controllers/pets/petControllers.js';
 import auth from '../middlewares/auth.js'; 
 
 const router = express.Router();
@@ -12,6 +12,8 @@ router.delete('/delete/:id', deleteUser);
 router.delete('/deletepet/:petId', auth, deletePet);
 
 //Update user router
-router.put('/update/:id', auth, updateUser)
+router.put('/update/:id', auth, updateUser);
 
+//Update pet router
+router.put('/updatepet/:petId', auth, updatePet);
 export default router;

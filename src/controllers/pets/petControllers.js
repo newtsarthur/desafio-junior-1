@@ -68,3 +68,39 @@ export const deletePet = async (req, res) => {
   }
 };
 
+//Update pet
+export const updatePet = async (req, res) => {
+  try {
+    const userId = req.userId;
+    const petId = req.params.petId;
+    const { name, birthDate, type, race } = req.body;
+
+    if(!userId || !petId)
+    {
+      return res.status(400).json({ message: "Usuário ou pet inválido "});
+    }
+
+    const pet = await prisma.pet.findFirst({
+      where: { id: petId, userId },
+    })
+    
+    if(!pet) {
+      return res.status(404).json({ message: "Pet não encontrado ou não pertence ao usuário "});
+    }
+
+    const updatePet = await prisma.pet.update({
+      where: { id: petId },
+      data: {
+        name,
+        birthDate: birthDate ? new Date(birthDate) : undefined,
+        type,
+        race,
+      },
+    });
+
+    res.status(200).json(updatePet);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Erro ao atualizar informações do pet"});
+  }
+}
